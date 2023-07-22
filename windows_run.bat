@@ -1,0 +1,1 @@
+python bot.py -c config.toml
