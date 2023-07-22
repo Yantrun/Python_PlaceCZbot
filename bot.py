@@ -604,7 +604,7 @@ class RedditPlaceClient:
             },
             'query': SET_PIXEL_QUERY
         }
-        self.logger.info("Pixel x:%d y:%d canvasIndex:%d", (col % 1000)-500, (row % 1000)-500,canvas_index)
+        self.logger.info("Pixel x:%d y:%d canvasIndex:%d", col - 1500, row - 1000,canvas_index)
         self.logger.info("Attempting to place a pixel at (%d, %d) (canvas: %d), with color %d...", col, row,
                          canvas_index, color)
 
