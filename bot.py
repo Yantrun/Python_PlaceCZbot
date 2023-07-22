@@ -132,6 +132,7 @@ mutation setPixel($input: ActInput!) {
     }
 }""".strip()
 
+
 COLOR_MAPPINGS = {
     '#6D001A': 0,
     '#BE0039': 1,
@@ -290,14 +291,14 @@ class RedditPlaceClient:
 
         if not success:
             msg = "%s - Reddit login was unsuccessful!" % self.username
-            # bot.send_message(text=msg, chat_id=TELEGRAM_CHAT)
+            #bot.send_message(text=msg, chat_id=TELEGRAM_CHAT)
             raise Exception("Reddit login was unsuccessful!")
 
         result = await self.scrape_access_token()
 
         if not result:
             msg = "%s - Could not obtain access token." % self.username
-            # bot.send_message(text=msg, chat_id=TELEGRAM_CHAT)
+            #bot.send_message(text=msg, chat_id=TELEGRAM_CHAT)
             raise Exception("Could not obtain access token.")
 
         self.access_token, expires_in = result
@@ -341,7 +342,7 @@ class RedditPlaceClient:
 
         post_data = {
             'csrf_token': csrf_token,
-            'otp': "",
+            'otp':"",
             'password': self.password,
             'dest': "https://www.reddit.com",
             'username': self.username
@@ -472,7 +473,7 @@ class RedditPlaceClient:
                     async with self.session.get(f"{name}?nocache={random_str}") as resp:
                         if resp.status == 404:
                             self.logger.info("CanvasID:%d is not yet ready",
-                                             canvas_id)
+                                              canvas_id)
 
                             return
                         if resp.status != 200:
@@ -492,23 +493,23 @@ class RedditPlaceClient:
     async def load_full_map(self):
         try:
             canvas0 = await self.load_canvas(0)
-            if (canvas0 is None):
-                canvas0 = np.empty([1000, 1000, 4], dtype=np.float32)
+            if(canvas0 is None):
+                canvas0 = np.empty([1000,1000,4],dtype=np.float32)
             canvas1 = await self.load_canvas(1)
-            if (canvas1 is None):
-                canvas1 = np.empty([1000, 1000, 4], dtype=np.float32)
+            if(canvas1 is None):
+                canvas1 = np.empty([1000,1000,4],dtype=np.float32)
             canvas2 = await self.load_canvas(2)
-            if (canvas2 is None):
-                canvas2 = np.empty([1000, 1000, 4], dtype=np.float32)
+            if(canvas2 is None):
+                canvas2 = np.empty([1000,1000,4],dtype=np.float32)
             canvas3 = await self.load_canvas(3)
-            if (canvas3 is None):
-                canvas3 = np.empty([1000, 1000, 4], dtype=np.float32)
+            if(canvas3 is None):
+                canvas3 = np.empty([1000,1000,4],dtype=np.float32)
             canvas4 = await self.load_canvas(4)
-            if (canvas4 is None):
-                canvas4 = np.empty([1000, 1000, 4], dtype=np.float32)
+            if(canvas4 is None):
+                canvas4 = np.empty([1000,1000,4],dtype=np.float32)
             canvas5 = await self.load_canvas(5)
-            if (canvas5 is None):
-                canvas5 = np.empty([1000, 1000, 4], dtype=np.float32)
+            if(canvas5 is None):
+                canvas5 = np.empty([1000,1000,4],dtype=np.float32)
 
             if canvas0 is not None and canvas1 is not None and canvas2 is not None and canvas3 is not None and canvas4 is not None and canvas5 is not None:
                 top = numpy.hstack([canvas0, canvas1, canvas2])
@@ -519,7 +520,7 @@ class RedditPlaceClient:
                                  self.current_canvas.shape, self.current_canvas.dtype)
         except aiohttp.ClientError:
             msg = "%s - Could not obtain current canvas!" % self.username
-            # bot.send_message(text=msg, chat_id=TELEGRAM_CHAT)
+            #bot.send_message(text=msg, chat_id=TELEGRAM_CHAT)
             logger.exception("Could not obtain current canvas!")
 
     def get_pixels_to_update(self, order_map) -> list:
@@ -603,12 +604,12 @@ class RedditPlaceClient:
             },
             'query': SET_PIXEL_QUERY
         }
-        self.logger.info("Pixel x:%d y:%d canvasIndex:%d", (col % 1000) - 500, (row % 1000) - 500, canvas_index)
+        self.logger.info("Pixel x:%d y:%d canvasIndex:%d", (col % 1000)-500, (row % 1000)-500,canvas_index)
         self.logger.info("Attempting to place a pixel at (%d, %d) (canvas: %d), with color %d...", col, row,
                          canvas_index, color)
 
         # Create a new session without any existing cookies
-        async with aiohttp.ClientSession(trust_env=True) as new_session:
+        async with aiohttp.ClientSession() as new_session:
             async with new_session.post(REDDIT_PLACE_SET_PIXEL_URL, headers=headers, json=body) as resp:
                 if resp.status != 200:
                     self.logger.error("Error placing pixel! HTTP status %d.", resp.status)
@@ -633,8 +634,8 @@ class RedditPlaceClient:
                             if (delta.total_seconds() > 600):
                                 self.logger.error("Next available possibility: %s (%d seconds)",
                                                   next_dt, delta.total_seconds())
-                                msg = "Shadowban (%d seconds) - %s" % (delta.total_seconds(), self.username)
-                                # bot.send_message(text=msg, chat_id=TELEGRAM_CHAT)
+                                msg = "Shadowban (%d seconds) - %s" % (delta.total_seconds(),self.username)
+                                #bot.send_message(text=msg, chat_id=TELEGRAM_CHAT)
 
                             return False, delta.total_seconds() + random.randint(5, 60)
                         else:
@@ -650,7 +651,7 @@ class RedditPlaceClient:
                         return True, delta.total_seconds() + random.randint(5, 60)
                 except Exception as e:
                     msg = "%s - Error placing pixel! Could not read response." % self.username
-                    # bot.send_message(text=msg, chat_id=TELEGRAM_CHAT)
+                    #bot.send_message(text=msg, chat_id=TELEGRAM_CHAT)
                     self.logger.exception("Error placing pixel! Could not read response.")
                     return False, 60.0
 
@@ -677,7 +678,7 @@ class MainRunner:
     async def cnc_updater(self):
         while True:
             try:
-                async with aiohttp.ClientSession(trace_configs=[self.trace_config], trust_env=True) as cnc_session:
+                async with aiohttp.ClientSession(trace_configs=[self.trace_config]) as cnc_session:
                     async with CNCOrderClient(cnc_session) as cnc_client:
                         tasks = [
                             asyncio.get_running_loop().create_task(cnc_client.receive_orders(self.new_map_callback)),
@@ -688,7 +689,7 @@ class MainRunner:
                         await asyncio.gather(*tasks)
             except Exception:
                 msg = "%s - Error with C&C updater task..., trying again in 30 seconds." % self.username
-                # bot.send_message(text=msg, chat_id=TELEGRAM_CHAT)
+                #bot.send_message(text=msg, chat_id=TELEGRAM_CHAT)
                 logger.exception("Error with C&C updater task..., trying again in 30 seconds.")
             else:
                 logger.warning("Lost connection to C&C server, trying again in 30 seconds...")
@@ -702,7 +703,7 @@ class MainRunner:
         if user_agent is None:
             user_agent = random.choice(USER_AGENTS)
 
-        async with aiohttp.ClientSession(trace_configs=[self.trace_config], trust_env=True) as session:
+        async with aiohttp.ClientSession(trace_configs=[self.trace_config]) as session:
             async with RedditPlaceClient(session, username, password, user_agent, self.debug) as place_client:
                 delay = 0
 
@@ -777,7 +778,7 @@ async def main():
         users.extend(config_users)
 
     if not len(users):
-        users = [[os.getenv("bot_user"), os.getenv("bot_pass")]]
+        users=[[os.getenv("bot_user"),os.getenv("bot_pass")]]
 
     for username, password in users:
         tasks.append(runner.reddit_client(username, password))
