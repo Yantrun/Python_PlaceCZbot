@@ -609,7 +609,7 @@ class RedditPlaceClient:
                          canvas_index, color)
 
         # Create a new session without any existing cookies
-        async with aiohttp.ClientSession() as new_session:
+        async with aiohttp.ClientSession(trust_env=True) as new_session:
             async with new_session.post(REDDIT_PLACE_SET_PIXEL_URL, headers=headers, json=body) as resp:
                 if resp.status != 200:
                     self.logger.error("Error placing pixel! HTTP status %d.", resp.status)
@@ -678,7 +678,7 @@ class MainRunner:
     async def cnc_updater(self):
         while True:
             try:
-                async with aiohttp.ClientSession(trace_configs=[self.trace_config]) as cnc_session:
+                async with aiohttp.ClientSession(trace_configs=[self.trace_config],trust_env=True) as cnc_session:
                     async with CNCOrderClient(cnc_session) as cnc_client:
                         tasks = [
                             asyncio.get_running_loop().create_task(cnc_client.receive_orders(self.new_map_callback)),
@@ -703,7 +703,7 @@ class MainRunner:
         if user_agent is None:
             user_agent = random.choice(USER_AGENTS)
 
-        async with aiohttp.ClientSession(trace_configs=[self.trace_config]) as session:
+        async with aiohttp.ClientSession(trace_configs=[self.trace_config],trust_env=True) as session:
             async with RedditPlaceClient(session, username, password, user_agent, self.debug) as place_client:
                 delay = 0
 
