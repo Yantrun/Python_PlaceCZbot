@@ -18,3 +18,8 @@ Proxy is supported via ENV variables:
 - WSS_PROXY
 
 Use HTTP proxy for all of them
+
+# Easy installation on Windows
+Run *windows_install.bat* to install Python3 and Pipy on Windows with one click.
+
+**windows_run.bat** expects you to use config.toml as configuration file for accounts
