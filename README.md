@@ -16,3 +16,5 @@ Proxy is supported via ENV variables:
 - HTTPS_PROXY
 - WS_PROXY
 - WSS_PROXY
+
+Use HTTP proxy for all of them
